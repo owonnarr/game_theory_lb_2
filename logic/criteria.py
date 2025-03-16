@@ -57,7 +57,7 @@ def calculate_all_criteria(matrix, probabilities, selected_criteria, lambdas):
 
     return results, optimal, criteria_matrices
 
-def save_results(optimal_dict, criteria_matrices):
+def save_results(optimal_dict):
     with pd.ExcelWriter("results/calculated_" + datetime.now().isoformat() + ".xlsx") as writer:
 
         optimal_df = pd.DataFrame(optimal_dict.items(), columns=["Критерій", "Оптимальна стратегія"])
