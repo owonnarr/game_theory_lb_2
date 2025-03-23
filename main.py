@@ -42,13 +42,16 @@ class GameTheoryApp:
         self.lambda2_entry.insert(0, "0.3")
         self.lambda2_entry.grid(row=7, column=2)
 
-        self.result_text = Text(root, height=10, width=80)
+        self.result_text = Text(root, height=10, width=100)
         self.result_text.grid(row=8, column=0, columnspan=3)
 
-        Button(root, text="Прорахувати", command=self.calculate).grid(row=9, column=0, sticky="ew", padx=2)
-        Button(root, text="Зберегти", command=self.save).grid(row=9, column=1, sticky="ew", padx=2)
-        Button(root, text="Скинути", command=self.reset).grid(row=9, column=2, sticky="ew", padx=2)
-        Button(root, text="Вийти", command=root.quit).grid(row=9, column=3, sticky="ew", padx=2)
+        buttons_frame = Frame(root)
+        buttons_frame.grid(row=9, column=0, columnspan=3, pady=10)
+
+        Button(buttons_frame, text="Прорахувати", command=self.calculate, width=15).grid(row=0, column=0, padx=5)
+        Button(buttons_frame, text="Зберегти", command=self.save, width=15).grid(row=0, column=1, padx=5)
+        Button(buttons_frame, text="Скинути", command=self.reset, width=15).grid(row=0, column=2, padx=5)
+        Button(buttons_frame, text="Вийти", command=self.root.quit, width=15).grid(row=0, column=3, padx=5)
 
     def select_file(self):
         path = filedialog.askopenfilename(filetypes=[("Excel Files", "*.xlsx")])
@@ -62,15 +65,14 @@ class GameTheoryApp:
             return
 
         try:
-            matrix, probabilities = load_matrix(self.file_path)
+            matrix, probabilities, row_labels, col_labels = load_matrix(self.file_path)
             if not validate_probabilities(probabilities):
                 messagebox.showerror("Помилка", "Ймовірності не валідні (сума > 1)")
                 return
 
             lambdas = [float(self.lambda1_entry.get()), float(self.lambda2_entry.get())]
             selected_criteria = {k: v.get() for k, v in self.criteria_vars.items()}
-            results, optimal, criteria_matrices = calculate_all_criteria(matrix, probabilities, selected_criteria,
-                                                                         lambdas)
+            results, optimal, criteria_matrices = calculate_all_criteria(matrix, probabilities, selected_criteria, lambdas, row_labels, col_labels)
 
             self.result_text.delete("1.0", END)
             self.result_text.insert(END, results)
@@ -98,7 +100,6 @@ class GameTheoryApp:
 
         self.file_path = None
         self.file_label.config(text="Не обрано", fg="gray")
-
 
 if __name__ == "__main__":
     root = Tk()
